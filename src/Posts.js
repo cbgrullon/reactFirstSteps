@@ -3,25 +3,34 @@ import Post from './Post';
 import Comments from './Comments';
 import axios from 'axios'
 import { Row,Col } from 'reactstrap';
-function Posts({baseApiUrl}){
+import Constants from './Constants';
+import Loading from './Loading';
+import ShowIf from './ShowIf';
+function Posts(){
+    const baseApiUrl = Constants.baseApiUrl;
     const [posts, setPosts] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [currentPost, setCurrentPost] = useState({});
     const [comments, setComments] = useState([]);
+    const [isLoading,setIsLoading] = useState(true)
     const getPosts = () => {
         axios
           .get(`${baseApiUrl}/posts`)
           .then(async (response) => {
             setPosts(response.data)
+            setIsLoading(false)
           })
-          .catch((error) => console.error(error));
+          .catch((error) =>{
+            console.error(error)
+            setIsLoading(false)
+          });
       };
       const getComments = async (postId) => {
         const response = await axios.get(`${baseApiUrl}/posts/${postId}/comments`);
         setComments(response.data);
+        setIsLoading(false)
       };
       const openModal = async (post) => {
-        setCurrentPost(post);
+        setIsLoading(true);
         await getComments(post.id);
         setShowModal(true);
       };
@@ -36,6 +45,8 @@ function Posts({baseApiUrl}){
         <div>
             <h3>Posts</h3>
             <hr/>
+            <div className="pt-1"></div>
+            <Loading isLoading={isLoading}/>
             <Row>
                 {posts.map(post=>(
                     <Col lg="12" className="p-3">
