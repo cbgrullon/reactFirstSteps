@@ -16,6 +16,11 @@ function TopMenu() {
                       Posts
                     </NavLink>
                   </NavItem>
+                  <NavItem>
+                    <NavLink exact to="/users" className="nav-link" activeClassName="active">
+                      Users
+                    </NavLink>
+                  </NavItem>
               </Nav>
           </Collapse>
         </NavbarBrand>

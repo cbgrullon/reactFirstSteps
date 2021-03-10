@@ -11,7 +11,9 @@ function Posts({baseApiUrl}){
     const getPosts = () => {
         axios
           .get(`${baseApiUrl}/posts`)
-          .then((response) => setPosts(response.data))
+          .then(async (response) => {
+            setPosts(response.data)
+          })
           .catch((error) => console.error(error));
       };
       const getComments = async (postId) => {
@@ -20,21 +22,24 @@ function Posts({baseApiUrl}){
       };
       const openModal = async (post) => {
         setCurrentPost(post);
-        await getComments(currentPost.id);
+        await getComments(post.id);
         setShowModal(true);
       };
       const closeModal = () => {
         setShowModal(false);
       };
-      useEffect(() => getPosts());
+      useEffect(() => {
+        if(posts.length ===0)
+          getPosts();
+      });
     return(
-        <div className="pt-2">
+        <div>
             <h3>Posts</h3>
             <hr/>
             <Row>
                 {posts.map(post=>(
                     <Col lg="12" className="p-3">
-                        <Post post={post} handleClick={openModal.bind(this,post)}/>
+                        <Post post={post} handleClick={()=>openModal(post)}/>
                     </Col>
                 ))}
             </Row>
