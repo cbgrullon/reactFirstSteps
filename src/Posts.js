@@ -5,7 +5,6 @@ import axios from 'axios'
 import { Row,Col } from 'reactstrap';
 import Constants from './Constants';
 import Loading from './Loading';
-import ShowIf from './ShowIf';
 function Posts(){
     const baseApiUrl = Constants.baseApiUrl;
     const [posts, setPosts] = useState([]);
@@ -38,7 +37,7 @@ function Posts(){
         setShowModal(false);
       };
       useEffect(() => {
-        if(posts.length ===0)
+        if(posts.length === 0)
           getPosts();
       });
     return(

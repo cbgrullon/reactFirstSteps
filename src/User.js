@@ -1,6 +1,5 @@
 import React from "react";
 import {Card,CardHeader,CardBody,FormGroup,Row,Col,Label,Input} from 'reactstrap';
-import UserMap from './UserMap';
 function User({user}) {
   return (
     <div>
@@ -57,13 +56,6 @@ function User({user}) {
               </FormGroup>
             </Col>
           </Row>
-          <div>
-            <UserMap
-              name={user.name}
-              lat={user.address.geo.lat}
-              lng={user.address.geo.lng}
-            ></UserMap>
-          </div>
         </CardBody>
       </Card>
     </div>

@@ -1,11 +1,12 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import {Row, Col } from 'reactstrap';
-import Constants from './Constants';
 import User from './User';
 import Loading from './Loading'
+import ApiContext from './context/ApiContext';
 function Users() {
-    const baseApiUrl = Constants.baseApiUrl;
+    const apiContext = useContext(ApiContext);
+    const baseApiUrl = apiContext.apiBaseUrl;
     const [users, setUsers] = useState([]);
     
     const [isLoading,setIsLoading] = useState(true)
@@ -31,7 +32,7 @@ function Users() {
             <Loading isLoading={isLoading}/>
             <Row>
                 {users.map(user => (
-                    <Col lg="12" className="p-3">
+                    <Col lg="12" className="p-3" key={user.id}>
                         <User user={user}/>
                     </Col>
                 ))}
