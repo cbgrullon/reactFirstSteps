@@ -19,7 +19,7 @@ function Comments({comments,handleCancelClick, canShow,toggle}){
                 ))}
             </ModalBody>
             <ModalFooter>
-                <Button color="secondary" onClick={handleCancelClick.bind(this)}>
+                <Button color="secondary" onClick={handleCancelClick}>
                     Close
                 </Button>
             </ModalFooter>

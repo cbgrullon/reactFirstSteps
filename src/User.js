@@ -1,9 +1,10 @@
 import React from "react";
+import './User.css'
 import {Card,CardHeader,CardBody,FormGroup,Row,Col,Label,Input} from 'reactstrap';
-function User({user}) {
+function User({user,handleOnClick}) {
   return (
     <div>
-      <Card>
+      <Card className="userCard" onClick={handleOnClick}>
         <CardHeader tag="h5">{user.name}</CardHeader>
         <CardBody>
           <FormGroup>

@@ -6,8 +6,8 @@ function Loading({ isLoading }) {
     <ShowIf isVisible={isLoading}>
       <div
         style={{
-          height: "100%",
-          width: "100%",
+          height: window.innerHeight,
+          width: window.innerWidth,
           backgroundColor: "rgba(0,0,0,0.35)",
           top:0,
           position:"absolute",
