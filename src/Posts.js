@@ -1,60 +1,65 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useReducer } from 'react';
 import Post from './Post';
 import Comments from './Comments';
 import axios from 'axios'
 import { Row, Col } from 'reactstrap';
 import Loading from './Loading';
 import ApiContext from './context/ApiContext';
+import { Reducer, Actions } from './reducers/PostsReducer';
 function Posts() {
   const apiContext = useContext(ApiContext);
   const baseApiUrl = apiContext.apiBaseUrl;
-  const [posts, setPosts] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [comments, setComments] = useState([]);
-  const [isLoading, setIsLoading] = useState(true)
+  const [state, dispatch] = useReducer(Reducer, {
+    isLoading: true,
+    showComments: false,
+    comments: [],
+    posts: [],
+    currentPost: {}
+  });
   const getPosts = () => {
     axios
       .get(`${baseApiUrl}/posts`)
       .then(async (response) => {
-        setPosts(response.data)
-        setIsLoading(false)
+        dispatch({ type: Actions.ShowPosts, payload: response.data });
       })
       .catch((error) => {
         console.error(error)
-        setIsLoading(false)
+        dispatch({ type: Actions.StopLoading })
       });
   };
-  const getComments = async (postId) => {
-    const response = await axios.get(`${baseApiUrl}/posts/${postId}/comments`);
-    setComments(response.data);
-    setIsLoading(false)
-  };
-  const openModal = async (post) => {
-    setIsLoading(true);
-    await getComments(post.id);
-    setShowModal(true);
-  };
-  const closeModal = () => {
-    setShowModal(false);
+  const getComments = () => {
+    axios.get(`${baseApiUrl}/posts/${state.currentPost.id}/comments`)
+      .then(response => {
+        dispatch({ type: Actions.ShowComments, payload: response.data });
+      })
+      .catch(err=>{
+        console.error(err);
+        dispatch({type:Actions.StopLoading})
+      });
   };
   useEffect(() => {
-    if (posts.length === 0)
-      getPosts();
-  });
+    getPosts();
+    //eslint-disable-next-line
+  }, []);
+  useEffect(() => {
+    if (state.currentPost.id)
+      getComments();
+    //eslint-disable-next-line
+  }, [state.currentPost])
   return (
     <div>
       <h3>Posts</h3>
       <hr />
       <div className="pt-1"></div>
-      <Loading isLoading={isLoading} />
+      <Loading isLoading={state.isLoading} />
       <Row>
-        {posts.map(post => (
+        {state.posts.map(post => (
           <Col lg="12" className="p-3">
-            <Post post={post} handleClick={() => openModal(post)} />
+            <Post post={post} handleClick={() => dispatch({ type: Actions.LoadComments, payload: post })} />
           </Col>
         ))}
       </Row>
-      <Comments canShow={showModal} handleCancelClick={closeModal} comments={comments}></Comments>
+      <Comments canShow={state.showComments} handleCancelClick={() => { dispatch({ type: Actions.CloseComments }) }} comments={state.comments}></Comments>
     </div>
   );
 }

@@ -5,55 +5,38 @@ import User from './User';
 import Loading from './Loading'
 import ApiContext from './context/ApiContext';
 import ToDos from './ToDos';
+import {Reducer,Actions} from './reducers/UsersReducer';
 function Users() {
     const apiContext = useContext(ApiContext);
     const baseApiUrl = apiContext.apiBaseUrl;
-    const loadUsers = () => {
-        axios.get(`${baseApiUrl}/users`)
-            .then(response => {
-                dispatch({ type: 'showUsers', payload: response.data })
-            }).catch(error => {
-                console.error(error);
-            })
-    }
-    const loadToDos = () => {
-        axios.get(`${baseApiUrl}/todos?userId=${state.currentUser.id}`)
-            .then(response => {
-                console.log(response.data)
-                dispatch({ type: "showToDos", payload: response.data });
-            }).catch(err => {
-                console.error(err);
-            })
-    }
-    const [state, dispatch] = useReducer((state, action) => {
-        switch (action.type) {
-            case "loadToDos":
-                let isLoading = state.currentUser.id !== action.payload.id
-                return { ...state, isLoading, currentUser: action.payload };
-            case "showToDos":
-                return { ...state, isLoading: false, showToDos: true, toDos: action.payload };
-            case "loadUsers":
-                return { ...state, isLoading: true };
-            case "showUsers":
-                return { ...state, isLoading: false, users: action.payload }
-            case "closeToDos":
-                return {...state,showToDos:false,currentUser:{}}
-            case "changeToDoFilter":
-                return {...state,toDosFilter:action.payload}
-            default:
-                throw Error("Invalid action type");
-        }
-    }, {
-        isLoading: false,
+    const [state, dispatch] = useReducer(Reducer, {
+        isLoading: true,
         toDos: [],
         users: [],
         currentUser: {},
         showToDos: false,
         toDosFilter:'All'
-    })
+    });
+    const loadUsers = () => {
+        axios.get(`${baseApiUrl}/users`)
+            .then(response => {
+                dispatch({ type: Actions.ShowUsers, payload: response.data })
+            }).catch(error => {
+                console.error(error);
+                dispatch({type:Actions.StopLoading})
+            })
+    }
+    const loadToDos = () => {
+        axios.get(`${baseApiUrl}/todos?userId=${state.currentUser.id}`)
+            .then(response => {
+                dispatch({ type: Actions.ShowToDos, payload: response.data });
+            }).catch(err => {
+                console.error(err);
+                dispatch({type:Actions.StopLoading})
+            })
+    }
     useEffect(() => {
-        console.log('load users');
-        dispatch({ type: 'loadUsers' });
+        dispatch({ type: Actions.LoadUsers });
         loadUsers();
         //eslint-disable-next-line
     }, []);
@@ -71,11 +54,11 @@ function Users() {
             <Row>
                 {state.users.map(user => (
                     <Col lg="12" className="p-3" key={user.id}>
-                        <User user={user} handleOnClick={() => dispatch({ type: 'loadToDos', payload: user })} />
+                        <User user={user} handleOnClick={() => dispatch({ type: Actions.LoadToDos, payload: user })} />
                     </Col>
                 ))}
             </Row>
-            <ToDos isVisible={state.showToDos} toDos={state.toDos} user={state.currentUser} filter={state.toDosFilter} filterChange={(newVal)=>{dispatch({type:'changeToDoFilter',payload:newVal})}} handleClose={()=>dispatch({type:'closeToDos'})}/>
+            <ToDos isVisible={state.showToDos} toDos={state.toDos} user={state.currentUser} filter={state.toDosFilter} filterChange={(newVal)=>{dispatch({type:Actions.ChangeToDoFilter,payload:newVal})}} handleClose={()=>dispatch({type:Actions.CloseToDos})}/>
         </div>
     );
 }

@@ -10,13 +10,13 @@ function Loading({ isLoading }) {
           width: window.innerWidth,
           backgroundColor: "rgba(0,0,0,0.35)",
           top:0,
-          position:"absolute",
+          position:"fixed",
           left:0,
           zIndex:999
         }}
       >
         <div
-          style={{ position: "fixed", left: "50%", top: "50%", zIndex: 1000 }}
+          style={{ position: "fixed", left: "50%", top: "50%", zIndex: 1000,margin:"-25px 0 0 -25px" }}
         >
           <ReactLoading type={"bars"} color={"#595959"}></ReactLoading>
           <h3 style={{ color: "#595959" }}>Loading...</h3>
